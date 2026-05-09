@@ -1,6 +1,7 @@
 package com.codereview.service;
 
 import com.codesage.model.AnalysisResult;
+import com.codesage.model.CustomRule;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayDeque;
@@ -10,9 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * Lightweight static analyzer for Java-like source ({@link #analyzeCode(String)}).
@@ -110,6 +114,115 @@ public class CodeAnalyzerService {
         score = clamp(score, MIN_SCORE, INITIAL_SCORE);
         String category = resolveScoreCategory(score);
         return new AnalysisResult(score, category, issues, suggestions);
+    }
+
+    public AnalysisResult analyzeCode(String code, List<CustomRule> customRules) {
+        AnalysisResult baseResult = analyzeCode(code);
+        if (customRules == null || customRules.isEmpty()) {
+            return baseResult;
+        }
+
+        List<CustomRule> enabledRules = customRules.stream()
+                .filter(Objects::nonNull)
+                .filter(rule -> Boolean.TRUE.equals(rule.getEnabled()))
+                .collect(Collectors.toList());
+
+        if (enabledRules.isEmpty()) {
+            return baseResult;
+        }
+
+        List<String> issues = new ArrayList<>(baseResult.getIssues());
+        List<String> suggestions = new ArrayList<>(baseResult.getSuggestions());
+        int score = baseResult.getScore();
+
+        for (CustomRule rule : enabledRules) {
+            if (!isCustomRuleValid(rule)) {
+                continue;
+            }
+            if (matchesCustomRule(code, rule)) {
+                score -= rule.getDeductionScore();
+                issues.add("[CUSTOM RULE] " + rule.getRuleName() + " - " + rule.getIssueMessage());
+                suggestions.add(rule.getSuggestionMessage());
+            }
+        }
+
+        score = clamp(score, MIN_SCORE, INITIAL_SCORE);
+        String category = resolveScoreCategory(score);
+        return new AnalysisResult(score, category, issues, suggestions);
+    }
+
+    private boolean isCustomRuleValid(CustomRule rule) {
+        if (rule == null
+                || rule.getRuleName() == null || rule.getRuleName().trim().isEmpty()
+                || rule.getDetectionType() == null
+                || rule.getPatternValue() == null || rule.getPatternValue().trim().isEmpty()
+                || rule.getIssueMessage() == null || rule.getIssueMessage().trim().isEmpty()
+                || rule.getSuggestionMessage() == null || rule.getSuggestionMessage().trim().isEmpty()
+                || rule.getDeductionScore() == null
+                || rule.getDeductionScore() < 1 || rule.getDeductionScore() > 50) {
+            return false;
+        }
+
+        if ("Regex Pattern".equals(rule.getDetectionType()) && !isRegexValid(rule.getPatternValue())) {
+            return false;
+        }
+
+        return switch (rule.getDetectionType()) {
+            case "Regex Pattern",
+                    "Keyword Match",
+                    "Contains Text",
+                    "Starts With",
+                    "Ends With" -> true;
+            default -> false;
+        };
+    }
+
+    private boolean matchesCustomRule(String code, CustomRule rule) {
+        String pattern = rule.getPatternValue().trim();
+        return switch (rule.getDetectionType()) {
+            case "Regex Pattern" -> matchesRegex(code, pattern);
+            case "Keyword Match", "Contains Text" -> code.contains(pattern);
+            case "Starts With" -> anyLineMatches(code, pattern, true);
+            case "Ends With" -> anyLineMatches(code, pattern, false);
+            default -> false;
+        };
+    }
+
+    private boolean matchesRegex(String code, String pattern) {
+        try {
+            return Pattern.compile(pattern, Pattern.MULTILINE).matcher(code).find();
+        } catch (PatternSyntaxException ex) {
+            return false;
+        }
+    }
+
+    private boolean anyLineMatches(String code, String pattern, boolean startsWith) {
+        String[] lines = code.split("\\R");
+        for (String line : lines) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (startsWith && trimmed.startsWith(pattern)) {
+                return true;
+            }
+            if (!startsWith && trimmed.endsWith(pattern)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isRegexValid(String regex) {
+        if (regex == null || regex.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Pattern.compile(regex, Pattern.MULTILINE);
+            return true;
+        } catch (PatternSyntaxException ex) {
+            return false;
+        }
     }
 
     private boolean detectHardcodedSecrets(String code, List<String> issues, List<String> suggestions) {

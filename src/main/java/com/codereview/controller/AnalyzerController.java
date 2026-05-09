@@ -2,46 +2,35 @@ package com.codereview.controller;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.codereview.service.CodeAnalyzerService;
 import com.codesage.model.AnalysisResult;
+import com.codesage.model.CustomRule;
 
 /**
  * REST Controller for CodeSage AI Code Reviewer.
- *
- * Responsibilities:
- *  - Serve a health/status check (GET /api/status)
- *  - Receive code input via textarea OR file upload (POST /api/analyze)
- *  - Validate input and return friendly JSON error messages
- *  - Delegate analysis to CodeAnalyzerService
- *  - Return AnalysisResult as JSON response
+ * Supports legacy file upload form and modern JSON-based rule-enhanced analysis.
  */
 @RestController
 public class AnalyzerController {
 
     private final CodeAnalyzerService codeAnalyzerService;
 
-    /**
-     * Constructor injection for the analyzer service.
-     * Spring will auto-wire the CodeAnalyzerService bean.
-     */
     public AnalyzerController(CodeAnalyzerService codeAnalyzerService) {
         this.codeAnalyzerService = codeAnalyzerService;
     }
 
-    /**
-     * GET /api/status — Simple health check endpoint.
-     *
-     * @return JSON with application status
-     */
     @GetMapping("/api/status")
     public ResponseEntity<Map<String, String>> getStatus() {
         return ResponseEntity.ok(Map.of(
@@ -50,38 +39,20 @@ public class AnalyzerController {
         ));
     }
 
-    /**
-     * POST /api/analyze — Accepts Java code via form data.
-     *
-     * Supports two input methods:
-     *  1. "code" — plain text pasted from the textarea
-     *  2. "file" — a .java file uploaded from the frontend
-     *
-     * If both are provided, the file takes priority.
-     * Returns the AnalysisResult as JSON.
-     *
-     * @param code optional code text from the textarea
-     * @param file optional uploaded .java file
-     * @return JSON response with analysis result or error
-     */
     @PostMapping("/api/analyze")
-    public ResponseEntity<?> analyzeCode(
+    public ResponseEntity<?> analyzeCodeForm(
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         String sourceCode = null;
 
-        // --- Priority: File upload takes precedence over textarea ---
         if (file != null && !file.isEmpty()) {
-            // Validate file type
             String fileName = file.getOriginalFilename();
             if (fileName == null || !fileName.endsWith(".java")) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "error", "Only .java files are allowed. Please upload a valid Java file."
                 ));
             }
-
-            // Read file content
             try {
                 sourceCode = new String(file.getBytes(), StandardCharsets.UTF_8);
             } catch (IOException e) {
@@ -93,22 +64,63 @@ public class AnalyzerController {
             sourceCode = code;
         }
 
-        // --- Validate: at least one input must be provided ---
         if (sourceCode == null || sourceCode.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of(
                     "error", "Please paste some Java code or upload a .java file before clicking Analyze."
             ));
         }
 
-        // --- Delegate to Analysis Engine ---
         try {
             AnalysisResult result = codeAnalyzerService.analyzeCode(sourceCode);
             return ResponseEntity.ok(result);
-
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
                     "error", "Something went wrong while analyzing your code. Please try again."
             ));
+        }
+    }
+
+    @PostMapping("/analyze")
+    public ResponseEntity<?> analyzeCodeJson(@RequestBody AnalyzeRequest request) {
+        if (request == null || request.getCode() == null || request.getCode().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Please provide Java code and try again."
+            ));
+        }
+
+        List<CustomRule> customRules = request.getCustomRules();
+        if (customRules == null) {
+            customRules = Collections.emptyList();
+        }
+
+        try {
+            AnalysisResult result = codeAnalyzerService.analyzeCode(request.getCode(), customRules);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "error", "Something went wrong while analyzing your code. Please try again."
+            ));
+        }
+    }
+
+    public static class AnalyzeRequest {
+        private String code;
+        private List<CustomRule> customRules;
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public List<CustomRule> getCustomRules() {
+            return customRules;
+        }
+
+        public void setCustomRules(List<CustomRule> customRules) {
+            this.customRules = customRules;
         }
     }
 }

@@ -6,12 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Main entry point for the CodeSage AI Code Reviewer application.
  *
- * @SpringBootApplication enables:
- *  - Auto-configuration
- *  - Component scanning (picks up @Controller, @Service in com.codereview.*)
- *  - Configuration properties
+ * scanBasePackages is expanded to include com.codesage so the new runtime
+ * custom rule service and controller are discovered by Spring Boot.
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.codereview", "com.codesage"})
 public class CodeSageApplication {
 
     public static void main(String[] args) {

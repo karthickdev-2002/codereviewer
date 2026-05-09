@@ -1,6 +1,4 @@
-<!-- FILE: src/main/resources/templates/index.html -->
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -23,54 +21,47 @@
           rel="stylesheet">
 
     <style>
-
-        *{
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
 
-        body{
+        body {
             background: #07111f;
-            color: white;
+            color: #e2e8f0;
             min-height: 100vh;
         }
 
-        /* HERO */
-
-        .hero-section{
-            background: linear-gradient(135deg,#081b33,#0b2d4f,#0e7490);
+        .hero-section {
+            background: linear-gradient(135deg, #081b33, #0b2d4f, #0e7490);
             padding: 70px 20px;
             border-bottom-left-radius: 30px;
             border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-        .main-title{
+        .main-title {
             font-size: 3.2rem;
             font-weight: 700;
         }
 
-        .sub-title{
+        .sub-title {
             color: #cbd5e1;
             margin-top: 15px;
             font-size: 1.1rem;
         }
 
-        /* GLASS CARD */
-
-        .glass-card{
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 22px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
         }
 
-        /* TEXTAREA */
-
-        .code-input{
+        .code-input {
             background: #0f172a !important;
             border: 1px solid #334155 !important;
             color: white !important;
@@ -80,14 +71,12 @@
             font-size: 15px;
         }
 
-        .code-input::placeholder{
+        .code-input::placeholder {
             color: #94a3b8;
         }
 
-        /* BUTTON */
-
-        .analyze-btn{
-            background: linear-gradient(135deg,#06b6d4,#2563eb);
+        .analyze-btn {
+            background: linear-gradient(135deg, #06b6d4, #2563eb);
             border: none;
             padding: 14px 40px;
             color: white;
@@ -96,116 +85,35 @@
             transition: 0.3s;
         }
 
-        .analyze-btn:hover{
+        .analyze-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(37,99,235,0.4);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
         }
 
-        /* FILE UPLOAD */
-
-        .upload-box{
-            background: rgba(255,255,255,0.04);
+        .upload-box {
+            background: rgba(255, 255, 255, 0.04);
             border: 2px dashed #06b6d4;
             border-radius: 18px;
             transition: 0.3s;
         }
 
-        .upload-box:hover{
-            background: rgba(6,182,212,0.08);
+        .upload-box:hover {
+            background: rgba(6, 182, 212, 0.08);
         }
 
-        #fileInput{
-            background: #0f172a;
-            color: white;
-            border: 1px solid #334155;
-        }
-
-        .file-item{
-            background: rgba(255,255,255,0.06);
+        .file-item {
+            background: rgba(255, 255, 255, 0.06);
             padding: 12px;
             border-radius: 10px;
             margin-bottom: 10px;
             border-left: 4px solid #06b6d4;
         }
 
-        /* SCORE */
-
-        .score-circle{
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: radial-gradient(circle,#06b6d4,#1d4ed8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto;
-            font-size: 3rem;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-            box-shadow: 0 0 25px rgba(6,182,212,0.5);
-        }
-
-        @keyframes pulse{
-
-            0%{
-                transform: scale(1);
-            }
-
-            50%{
-                transform: scale(1.05);
-            }
-
-            100%{
-                transform: scale(1);
-            }
-
-        }
-
-        .status-badge{
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-size: 1rem;
-        }
-
-        /* PROGRESS */
-
-        .progress{
-            height: 14px;
-            border-radius: 20px;
-            background: #1e293b;
-        }
-
-        .progress-bar{
-            background: linear-gradient(to right,#06b6d4,#2563eb);
-        }
-
-        /* ISSUE */
-
-        .issue-card{
-            background: rgba(239,68,68,0.1);
-            border-left: 4px solid #ef4444;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        /* SUGGESTION */
-
-        .suggestion-card{
-            background: rgba(34,197,94,0.1);
-            border-left: 4px solid #22c55e;
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        /* LOADING */
-
-        .loading-overlay{
+        .loading-overlay {
             position: fixed;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             z-index: 999;
             display: none;
             justify-content: center;
@@ -213,437 +121,610 @@
             flex-direction: column;
         }
 
-        /* FOOTER */
-
-        .footer{
+        .footer {
             margin-top: 70px;
             text-align: center;
             color: #94a3b8;
             padding-bottom: 20px;
         }
 
-    </style>
+        .toast {
+            min-width: 260px;
+        }
 
+        .modal-content {
+            background: rgba(15, 23, 42, 0.98);
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            color: #cce7ff !important;
+        }
+
+        .rule-badge {
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- LOADING -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+    <div id="notificationToast" class="toast align-items-center text-white bg-dark border-0" role="alert"
+         aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div id="toastMessage" class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" aria-label="Close"
+                    onclick="hideToast()"></button>
+        </div>
+    </div>
+</div>
 
 <div class="loading-overlay" id="loadingOverlay">
-
-    <div class="spinner-border text-info"
-         style="width: 5rem; height: 5rem;">
-    </div>
-
-    <h3 class="mt-4">
-        AI Analyzing Your Code...
-    </h3>
-
+    <div class="spinner-border text-info" style="width: 5rem; height: 5rem;"></div>
+    <h3 class="mt-4 text-white">Analyzing code with custom rules...</h3>
 </div>
-
-<!-- HERO -->
 
 <section class="hero-section text-center">
-
     <div class="container">
-
-        <h1 class="main-title">
-
-            <i class="bi bi-cpu-fill"></i>
-
-            CodeSage AI Reviewer
-
-        </h1>
-
-        <p class="sub-title">
-
-            Smart Java Static Code Analysis Dashboard
-
-        </p>
-
+        <h1 class="main-title"><i class="bi bi-braces"></i> CodeSage AI Reviewer</h1>
+        <p class="sub-title">Create runtime custom Java analysis rules, test them live, and apply them immediately.</p>
     </div>
-
 </section>
 
-<!-- MAIN CONTENT -->
-
 <div class="container py-5">
-
-    <!-- INPUT CARD -->
-
-    <div class="glass-card p-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <h3>
-
-                <i class="bi bi-code-slash"></i>
-
-                Java Code Analyzer
-
-            </h3>
-
-            <button class="btn btn-outline-info"
-                    type="button"
-                    onclick="loadSampleCode()">
-
-                Load Sample
-
-            </button>
-
-        </div>
-
-        <!-- FORM -->
-
-        <form id="analyzeForm">
-
-            <!-- TEXTAREA -->
-
-            <div class="mb-4">
-
-                <label class="form-label fs-5 fw-semibold mb-3">
-
-                    Paste Java Code
-
-                </label>
-
-                <textarea class="form-control code-input"
-                          id="codeInput"
-                          rows="14"
-                          name="code"
-                          placeholder="Paste your Java code here..."
-                          th:text="${code}">
-                </textarea>
-
-            </div>
-
-            <!-- FILE UPLOAD -->
-
-            <div class="mb-4">
-
-                <label class="form-label fs-5 fw-semibold mb-3">
-
-                    Upload Java Files
-
-                </label>
-
-                <div class="upload-box text-center p-5">
-
-                    <input type="file"
-                           class="form-control"
-                           id="fileInput"
-                           name="files"
-                           multiple
-                           accept=".java,.txt">
-
-                    <div class="mt-4">
-
-                        <i class="bi bi-cloud-arrow-up display-4 text-info"></i>
-
-                        <h5 class="mt-3">
-
-                            Select Multiple Java Files
-
-                        </h5>
-
-                        <p class="text-secondary">
-
-                            Supports .java and .txt files
-
-                        </p>
-
+    <div class="row g-4">
+        <div class="col-xl-7">
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3><i class="bi bi-code-slash"></i> Java Code Analyzer</h3>
+                        <p class="text-secondary mb-0">Paste Java code or upload .java files for instant review.</p>
                     </div>
-
+                    <button class="btn btn-outline-info" type="button" onclick="loadSampleCode()">
+                        Load Sample
+                    </button>
                 </div>
-
-                <!-- FILE LIST -->
-
-                <div id="fileList" class="mt-3"></div>
-
-            </div>
-
-            <!-- SUBMIT -->
-
-            <div class="text-center mt-4">
-
-                <button type="submit"
-                        class="analyze-btn">
-
-                    <i class="bi bi-search"></i>
-
-                    Analyze Code
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-    <!-- RESULT SECTION -->
-
-    <div th:if="${result != null}" class="mt-5">
-
-        <div class="row g-4">
-
-            <!-- SCORE -->
-
-            <div class="col-lg-4">
-
-                <div class="glass-card p-4 text-center h-100">
-
-                    <h4 class="mb-4">
-
-                        AI Quality Score
-
-                    </h4>
-
-                    <div class="score-circle">
-
-                        <span th:text="${result.score}">
-                            0
-                        </span>
-
+                <form id="analyzeForm">
+                    <div class="mb-4">
+                        <label class="form-label fs-5 fw-semibold">Paste Java Code</label>
+                        <textarea class="form-control code-input" id="codeInput" rows="14"
+                                  placeholder="Paste your Java code here..."></textarea>
                     </div>
-
-                    <div class="mt-4">
-
-                        <span class="badge status-badge bg-info"
-                              th:text="${result.status}">
-
-                            Pending
-
-                        </span>
-
-                    </div>
-
-                    <!-- PROGRESS -->
-
-                    <div class="mt-4">
-
-                        <div class="progress">
-
-                            <div class="progress-bar"
-                                 role="progressbar"
-                                 th:style="'width:' + ${result.score} + '%'">
+                    <div class="mb-4">
+                        <label class="form-label fs-5 fw-semibold">Upload Java Files</label>
+                        <div class="upload-box text-center p-4 rounded-4">
+                            <input type="file" class="form-control mb-3" id="fileInput" name="files"
+                                   multiple accept=".java,.txt" style="background:#0f172a; color:#fff;"/>
+                            <div class="mt-3 text-white-50">
+                                <i class="bi bi-cloud-arrow-up display-4 text-info"></i>
+                                <h5 class="mt-3">Upload .java files</h5>
+                                <p class="mb-0">Selected files are read in-browser and combined with pasted code.</p>
                             </div>
-
                         </div>
-
+                        <div id="fileList" class="mt-3"></div>
                     </div>
-
+                    <div class="text-center mt-4">
+                        <button type="submit" class="analyze-btn"><i class="bi bi-search"></i> Analyze Code</button>
+                    </div>
+                </form>
+                <div class="mt-4">
+                    <span class="badge bg-info">Active Custom Rules:</span>
+                    <span id="activeRuleCount" class="badge bg-white text-dark">0</span>
                 </div>
-
             </div>
-
-            <!-- ISSUES -->
-
-            <div class="col-lg-4">
-
-                <div class="glass-card p-4 h-100">
-
-                    <h4 class="text-danger mb-4">
-
-                        <i class="bi bi-bug-fill"></i>
-
-                        Issues Detected
-
-                    </h4>
-
-                    <div th:if="${#lists.isEmpty(result.issues)}">
-
-                        <div class="alert alert-success">
-
-                            No issues found.
-
-                        </div>
-
-                    </div>
-
-                    <div th:each="issue : ${result.issues}"
-                         class="issue-card">
-
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-
-                        <span th:text="${issue}"></span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- SUGGESTIONS -->
-
-            <div class="col-lg-4">
-
-                <div class="glass-card p-4 h-100">
-
-                    <h4 class="text-success mb-4">
-
-                        <i class="bi bi-lightbulb-fill"></i>
-
-                        Suggestions
-
-                    </h4>
-
-                    <div th:if="${#lists.isEmpty(result.suggestions)}">
-
-                        <div class="alert alert-info">
-
-                            No suggestions available.
-
-                        </div>
-
-                    </div>
-
-                    <div th:each="suggestion : ${result.suggestions}"
-                         class="suggestion-card">
-
-                        <i class="bi bi-check-circle-fill"></i>
-
-                        <span th:text="${suggestion}"></span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
         </div>
 
+        <div class="col-xl-5">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3><i class="bi bi-list-check"></i> Custom Rule Engine</h3>
+                        <p class="text-secondary mb-0">Manage custom analysis rules without backend redeploy.</p>
+                    </div>
+                    <button class="btn btn-info" type="button" onclick="openRuleModal()">
+                        <i class="bi bi-plus-lg"></i> New Rule
+                    </button>
+                </div>
+                <div id="ruleTableContainer" style="max-height: 520px; overflow:auto;">
+                    <table class="table table-borderless table-striped align-middle text-white mb-0">
+                        <thead>
+                        <tr class="text-secondary small text-uppercase">
+                            <th scope="col">Enabled</th>
+                            <th scope="col">Rule</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Deduction</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="ruleTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="emptyRulesMessage" class="alert alert-info mt-3" style="display:none;">
+                    No custom rules configured yet. Create a rule to extend the static analyzer.
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>
 
-<!-- FOOTER -->
+<div class="footer">© 2026 CodeSage AI Reviewer | Dynamic Rule Engine</div>
 
-<div class="footer">
-
-    © 2026 CodeSage AI Reviewer | Hackathon Project
-
+<div class="modal fade" id="ruleModal" tabindex="-1" aria-labelledby="ruleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border border-info">
+            <div class="modal-header border-0 bg-dark text-white">
+                <h5 class="modal-title" id="ruleModalLabel">Create Custom Rule</h5>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                        onclick="closeRuleModal()"></button>
+            </div>
+            <div class="modal-body bg-dark text-white">
+                <form id="ruleForm">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Rule Name</label>
+                            <input type="text" id="ruleName" class="form-control bg-[#0f172a] text-white"
+                                   placeholder="Unique rule name"/>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Detection Type</label>
+                            <select id="detectionType" class="form-select bg-[#0f172a] text-white">
+                                <option value="Regex Pattern">Regex Pattern</option>
+                                <option value="Keyword Match">Keyword Match</option>
+                                <option value="Contains Text">Contains Text</option>
+                                <option value="Starts With">Starts With</option>
+                                <option value="Ends With">Ends With</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Deduction Score</label>
+                            <input type="number" id="deductionScore" class="form-control bg-[#0f172a] text-white"
+                                   min="1" max="50" value="5"/>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Pattern / Match Value</label>
+                            <textarea id="patternValue" rows="3" class="form-control bg-[#0f172a] text-white"
+                                      placeholder="Regex or plain text"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Issue Message</label>
+                            <input type="text" id="issueMessage" class="form-control bg-[#0f172a] text-white"
+                                   placeholder="Explain the issue"/>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Suggestion Message</label>
+                            <input type="text" id="suggestionMessage" class="form-control bg-[#0f172a] text-white"
+                                   placeholder="Recommend a fix"/>
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="ruleEnabled" checked>
+                                <label class="form-check-label" for="ruleEnabled">Enabled</label>
+                            </div>
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="testRuleFromModal()">
+                                <i class="bi bi-play-btn"></i> Test Rule
+                            </button>
+                            <button type="button" class="btn btn-outline-info btn-sm" onclick="loadSampleRule()">
+                                <i class="bi bi-file-earmark-code-fill"></i> Load Sample Rule
+                            </button>
+                            <div id="ruleTestResult" class="text-info small"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0 bg-dark">
+                <button type="button" class="btn btn-secondary" onclick="closeRuleModal()">Cancel</button>
+                <button type="button" class="btn btn-info" onclick="saveRule()">Save Rule</button>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- SCRIPT -->
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    const ruleModal = new bootstrap.Modal(document.getElementById('ruleModal'));
+    let currentEditRuleId = null;
+    let currentRules = [];
 
-    // SHOW LOADING
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('fileInput').addEventListener('change', renderFileSelection);
+        document.getElementById('analyzeForm').addEventListener('submit', handleAnalyzeSubmit);
+        loadRules();
+    });
 
-    function showLoading(){
+    function renderFileSelection() {
+        const fileList = document.getElementById('fileList');
+        const files = Array.from(this.files || []);
+        fileList.innerHTML = '';
 
-        document.getElementById("loadingOverlay").style.display = "flex";
+        if (files.length === 0) {
+            fileList.innerHTML = '<div class="alert alert-secondary">No files selected.</div>';
+            return;
+        }
 
+        files.forEach(file => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `<i class="bi bi-file-earmark-code-fill text-info"></i> ${escapeHtml(file.name)}`;
+            fileList.appendChild(fileItem);
+        });
     }
 
-    // HIDE LOADING
-
-    function hideLoading(){
-
-        document.getElementById("loadingOverlay").style.display = "none";
-
-    }
-
-    // SAMPLE CODE
-
-    function loadSampleCode(){
-
+    function loadSampleCode() {
         const sampleCode = `public class Test {
 
     public static void main(String[] args) {
-
         String password = "admin123";
-
-        System.out.println("Debugging");
+        System.out.println("Debugging output");
 
         int a = 10;
-
-        if(a > 0){
-
-            if(a > 5){
-
-                if(a > 8){
-
+        if (a > 0) {
+            if (a > 5) {
+                if (a > 8) {
                     System.out.println(a);
-
                 }
-
             }
-
         }
-
     }
-
 }`;
-
-        document.getElementById("codeInput").value = sampleCode;
-
+        document.getElementById('codeInput').value = sampleCode;
+        showToast('Sample code loaded. Customize custom rules and run analysis.', 'info');
     }
 
-    // FILE LIST DISPLAY
-
-    document.getElementById("fileInput")
-        .addEventListener("change", function () {
-
-            const fileList = document.getElementById("fileList");
-
-            fileList.innerHTML = "";
-
-            Array.from(this.files).forEach(file => {
-
-                const div = document.createElement("div");
-
-                div.className = "file-item";
-
-                div.innerHTML = `
-                    <i class="bi bi-file-earmark-code-fill text-info"></i>
-                    ${file.name}
-                `;
-
-                fileList.appendChild(div);
-
-            });
-
-    });
-
-    // FORM SUBMISSION — fetch() + redirect to result page
-
-    document.querySelector("form").addEventListener("submit", function (e) {
-
-        e.preventDefault();
-
+    function handleAnalyzeSubmit(event) {
+        event.preventDefault();
         showLoading();
 
-        const formData = new FormData(this);
+        const codeInput = document.getElementById('codeInput').value.trim();
+        const files = document.getElementById('fileInput').files;
 
-        fetch("/api/analyze", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
+        readFilesAsText(files)
+            .then(fileContents => {
+                const combinedCode = [codeInput, ...fileContents].filter(Boolean).join('\n\n');
 
-            // Store result in sessionStorage for the result page
-            sessionStorage.setItem("analysisResult", JSON.stringify(data));
+                if (!combinedCode) {
+                    hideLoading();
+                    showToast('Please paste Java code or upload at least one file.', 'warning');
+                    return;
+                }
 
-            // Redirect to the beautiful result page
-            window.location.href = "/result";
+                const payload = {
+                    code: combinedCode,
+                    customRules: currentRules.filter(rule => rule.enabled)
+                };
 
-        })
-        .catch(err => {
+                return fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+            })
+            .then(response => {
+                if (!response) return;
+                return response.json().then(data => ({ data, ok: response.ok }));
+            })
+            .then(result => {
+                hideLoading();
+                if (!result) return;
 
-            hideLoading();
+                if (!result.ok || result.data.error) {
+                    const message = result.data.error || 'Analysis failed. Please try again.';
+                    showToast(message, 'danger');
+                    return;
+                }
 
-            alert("Failed to analyze code. Please try again.");
-            console.error(err);
+                sessionStorage.setItem('analysisResult', JSON.stringify(result.data));
+                window.location.href = '/result';
+            })
+            .catch(error => {
+                hideLoading();
+                console.error(error);
+                showToast('Unable to analyze code right now.', 'danger');
+            });
+    }
 
+    function readFilesAsText(fileList) {
+        if (!fileList || fileList.length === 0) {
+            return Promise.resolve([]);
+        }
+
+        const readers = Array.from(fileList).map(file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsText(file, 'utf-8');
+        }));
+
+        return Promise.all(readers);
+    }
+
+    function loadRules() {
+        fetch('/rules/all')
+            .then(response => response.json())
+            .then(rules => {
+                currentRules = Array.isArray(rules) ? rules : [];
+                renderRuleTable(currentRules);
+            })
+            .catch(error => {
+                console.error(error);
+                showToast('Unable to load custom rules.', 'danger');
+            });
+    }
+
+    function renderRuleTable(rules) {
+        const body = document.getElementById('ruleTableBody');
+        const emptyMessage = document.getElementById('emptyRulesMessage');
+        body.innerHTML = '';
+
+        if (!rules.length) {
+            emptyMessage.style.display = 'block';
+            updateActiveRuleCount();
+            return;
+        }
+
+        emptyMessage.style.display = 'none';
+
+        rules.forEach(rule => {
+            const row = document.createElement('tr');
+            row.className = 'text-white';
+            row.innerHTML = `
+                <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" ${rule.enabled ? 'checked' : ''}
+                               onchange="toggleRule(${rule.id}, this.checked)">
+                    </div>
+                </td>
+                <td>
+                    <strong>${escapeHtml(rule.ruleName)}</strong><br>
+                    <small class="text-muted rule-badge">${escapeHtml(rule.patternValue)}</small>
+                </td>
+                <td>${escapeHtml(rule.detectionType)}</td>
+                <td><span class="badge bg-secondary">-${rule.deductionScore}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-info me-1" onclick='openRuleModal(${rule.id})'>Edit</button>
+                    <button class="btn btn-sm btn-outline-warning me-1" onclick='testRuleById(${rule.id})'>Test</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick='deleteRule(${rule.id})'>Delete</button>
+                </td>
+            `;
+            body.appendChild(row);
         });
 
-    });
+        updateActiveRuleCount();
+    }
 
+    function updateActiveRuleCount() {
+        const count = currentRules.filter(rule => rule.enabled).length;
+        document.getElementById('activeRuleCount').textContent = count;
+    }
+
+    function openRuleModal(ruleId) {
+        currentEditRuleId = null;
+        document.getElementById('ruleModalLabel').textContent = ruleId ? 'Edit Custom Rule' : 'Create Custom Rule';
+        document.getElementById('ruleTestResult').textContent = '';
+
+        if (ruleId) {
+            const rule = currentRules.find(r => r.id === ruleId);
+            if (rule) {
+                currentEditRuleId = ruleId;
+                document.getElementById('ruleName').value = rule.ruleName || '';
+                document.getElementById('detectionType').value = rule.detectionType || 'Regex Pattern';
+                document.getElementById('patternValue').value = rule.patternValue || '';
+                document.getElementById('deductionScore').value = rule.deductionScore || 5;
+                document.getElementById('issueMessage').value = rule.issueMessage || '';
+                document.getElementById('suggestionMessage').value = rule.suggestionMessage || '';
+                document.getElementById('ruleEnabled').checked = Boolean(rule.enabled);
+            }
+        } else {
+            document.getElementById('ruleName').value = '';
+            document.getElementById('detectionType').value = 'Regex Pattern';
+            document.getElementById('patternValue').value = '';
+            document.getElementById('deductionScore').value = 5;
+            document.getElementById('issueMessage').value = '';
+            document.getElementById('suggestionMessage').value = '';
+            document.getElementById('ruleEnabled').checked = true;
+        }
+
+        ruleModal.show();
+    }
+
+    function closeRuleModal() {
+        ruleModal.hide();
+    }
+
+    function collectRuleFromModal() {
+        return {
+            id: currentEditRuleId,
+            ruleName: document.getElementById('ruleName').value.trim(),
+            detectionType: document.getElementById('detectionType').value,
+            patternValue: document.getElementById('patternValue').value.trim(),
+            deductionScore: parseInt(document.getElementById('deductionScore').value, 10),
+            issueMessage: document.getElementById('issueMessage').value.trim(),
+            suggestionMessage: document.getElementById('suggestionMessage').value.trim(),
+            enabled: document.getElementById('ruleEnabled').checked
+        };
+    }
+
+    function validateRulePayload(rule) {
+        if (!rule.ruleName) return 'Rule name is required.';
+        if (!rule.detectionType) return 'Detection type is required.';
+        if (!rule.patternValue) return 'Pattern or match value is required.';
+        if (!rule.issueMessage) return 'Issue message is required.';
+        if (!rule.suggestionMessage) return 'Suggestion message is required.';
+        if (!Number.isInteger(rule.deductionScore) || rule.deductionScore < 1 || rule.deductionScore > 50) {
+            return 'Deduction score must be between 1 and 50.';
+        }
+        return null;
+    }
+
+    function saveRule() {
+        const rule = collectRuleFromModal();
+        const validationMessage = validateRulePayload(rule);
+        if (validationMessage) {
+            showToast(validationMessage, 'warning');
+            return;
+        }
+
+        const endpoint = rule.id ? '/rules/update' : '/rules/create';
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rule)
+        })
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(result => {
+                if (!result.ok || result.data.error) {
+                    showToast(result.data.error || 'Unable to save rule.', 'danger');
+                    return;
+                }
+                showToast('Rule saved successfully.', 'success');
+                closeRuleModal();
+                loadRules();
+            })
+            .catch(error => {
+                console.error(error);
+                showToast('Unable to save rule.', 'danger');
+            });
+    }
+
+    function deleteRule(ruleId) {
+        if (!confirm('Delete this rule permanently?')) {
+            return;
+        }
+        fetch('/rules/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: ruleId })
+        })
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(result => {
+                if (!result.ok || result.data.error) {
+                    showToast(result.data.error || 'Unable to delete rule.', 'danger');
+                    return;
+                }
+                showToast('Rule deleted.', 'success');
+                loadRules();
+            })
+            .catch(error => {
+                console.error(error);
+                showToast('Unable to delete rule.', 'danger');
+            });
+    }
+
+    function toggleRule(ruleId, enabled) {
+        fetch('/rules/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: ruleId, enabled })
+        })
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(result => {
+                if (!result.ok || result.data.error) {
+                    showToast(result.data.error || 'Unable to update rule state.', 'danger');
+                    loadRules();
+                    return;
+                }
+                showToast('Rule state updated.', 'success');
+                loadRules();
+            })
+            .catch(error => {
+                console.error(error);
+                showToast('Unable to update rule state.', 'danger');
+                loadRules();
+            });
+    }
+
+    function testRuleFromModal() {
+        const rule = collectRuleFromModal();
+        const validationMessage = validateRulePayload(rule);
+        if (validationMessage) {
+            showToast(validationMessage, 'warning');
+            return;
+        }
+        testRulePayload(rule, document.getElementById('codeInput').value || '');
+    }
+
+    function loadSampleRule() {
+        currentEditRuleId = null;
+        document.getElementById('ruleModalLabel').textContent = 'Create Custom Rule';
+        document.getElementById('ruleName').value = 'Hardcoded Secret Rule';
+        document.getElementById('detectionType').value = 'Regex Pattern';
+        document.getElementById('patternValue').value = '(?i)\\b(password|secret|apiKey|token)\\s*=';
+        document.getElementById('deductionScore').value = 20;
+        document.getElementById('issueMessage').value = 'Hardcoded secret detected';
+        document.getElementById('suggestionMessage').value = 'Use environment variables or a secure vault instead.';
+        document.getElementById('ruleEnabled').checked = true;
+        document.getElementById('ruleTestResult').textContent = 'Sample rule loaded into the popup.';
+        showToast('Sample rule loaded. Adjust it if needed and save.', 'info');
+    }
+
+    function testRuleById(ruleId) {
+        const rule = currentRules.find(r => r.id === ruleId);
+        if (!rule) {
+            showToast('Rule not found.', 'warning');
+            return;
+        }
+        testRulePayload(rule, document.getElementById('codeInput').value || '');
+    }
+
+    function testRulePayload(rule, sampleCode) {
+        fetch('/rules/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rule, sampleCode })
+        })
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(result => {
+                if (!result.ok || result.data.error) {
+                    showToast(result.data.error || 'Unable to test rule.', 'danger');
+                    return;
+                }
+                const message = result.data.matched ? 'Rule matches the current code.' : 'Rule does not match the current code.';
+                document.getElementById('ruleTestResult').textContent = message;
+                showToast(message, result.data.matched ? 'success' : 'info');
+            })
+            .catch(error => {
+                console.error(error);
+                showToast('Unable to test rule.', 'danger');
+            });
+    }
+
+    function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function showToast(message, type = 'info') {
+        const toastMessage = document.getElementById('toastMessage');
+        const toastElement = document.getElementById('notificationToast');
+        toastMessage.textContent = message;
+        let bgClass = 'bg-dark';
+        if (type === 'success') bgClass = 'bg-success';
+        if (type === 'danger') bgClass = 'bg-danger';
+        if (type === 'warning') bgClass = 'bg-warning text-dark';
+        toastElement.className = `toast align-items-center text-white border-0 ${bgClass}`;
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+    }
+
+    function hideToast() {
+        const toastEl = document.getElementById('notificationToast');
+        bootstrap.Toast.getInstance(toastEl)?.hide();
+    }
+
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value || '';
+        return div.innerHTML;
+    }
 </script>
-
 </body>
 </html>
