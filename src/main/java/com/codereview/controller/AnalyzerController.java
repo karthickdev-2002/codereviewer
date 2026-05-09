@@ -1,7 +1,8 @@
 package com.codereview.controller;
 
-import com.codereview.model.AnalysisResult;
-import com.codereview.service.CodeAnalyzerService;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import com.codereview.service.CodeAnalyzerService;
+import com.codesage.model.AnalysisResult;
 
 /**
  * REST Controller for CodeSage AI Code Reviewer.
@@ -102,7 +102,7 @@ public class AnalyzerController {
 
         // --- Delegate to Analysis Engine ---
         try {
-            AnalysisResult result = codeAnalyzerService.analyze(sourceCode);
+            AnalysisResult result = codeAnalyzerService.analyzeCode(sourceCode);
             return ResponseEntity.ok(result);
 
         } catch (Exception e) {
