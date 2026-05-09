@@ -19,4 +19,15 @@ public class PageController {
     public String showHomePage() {
         return "index";
     }
+
+    /**
+     * GET /result — Serves the analysis result page.
+     * The actual data is passed via sessionStorage by the frontend JavaScript.
+     *
+     * @return the "result" view name (resolves to templates/result.html)
+     */
+    @GetMapping("/result")
+    public String showResultPage() {
+        return "result";
+    }
 }

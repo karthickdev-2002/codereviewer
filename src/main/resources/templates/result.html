@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CodeSage — Analysis Report</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #07111f;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* ─── NAV BAR ─── */
+
+        .top-bar {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .top-bar a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .top-bar a:hover {
+            color: #06b6d4;
+        }
+
+        .brand {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #06b6d4, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ─── HERO BANNER ─── */
+
+        .report-hero {
+            background: linear-gradient(135deg, #081b33 0%, #0b2d4f 50%, #0e7490 100%);
+            padding: 50px 20px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .report-hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(6,182,212,0.12) 0%, transparent 70%);
+            top: -200px;
+            right: -100px;
+        }
+
+        .report-hero::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(129,140,248,0.1) 0%, transparent 70%);
+            bottom: -200px;
+            left: -100px;
+        }
+
+        .report-hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .report-hero p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            margin-top: 8px;
+        }
+
+        /* ─── GLASS CARD ─── */
+
+        .glass-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 22px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+        }
+
+        /* ─── SCORE RING ─── */
+
+        .score-ring-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+        }
+
+        .score-ring-bg {
+            fill: none;
+            stroke: #1e293b;
+            stroke-width: 12;
+        }
+
+        .score-ring-fill {
+            fill: none;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 1.8s cubic-bezier(0.4, 0, 0.2, 1),
+                        stroke 0.6s ease;
+        }
+
+        .score-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        .score-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* ─── STATUS BADGE ─── */
+
+        .category-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-excellent {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-good {
+            background: rgba(6, 182, 212, 0.15);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .badge-average {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .badge-poor {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* ─── SUMMARY STAT PILLS ─── */
+
+        .stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 16px 20px;
+            transition: background 0.2s;
+        }
+
+        .stat-pill:hover {
+            background: rgba(255,255,255,0.07);
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .stat-icon.issues-icon {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .stat-icon.suggestions-icon {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .stat-count {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* ─── ISSUE CARD ─── */
+
+        .issue-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.12);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .issue-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+            transform: translateX(4px);
+        }
+
+        .issue-num {
+            min-width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .issue-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* ─── SUGGESTION CARD ─── */
+
+        .suggestion-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(34, 197, 94, 0.06);
+            border: 1px solid rgba(34, 197, 94, 0.12);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(34, 197, 94, 0.1);
+            transform: translateX(4px);
+        }
+
+        .suggestion-num {
+            min-width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .suggestion-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* ─── SECTION HEADER ─── */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-header .icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .icon-box.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .icon-box.green {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .section-header h4 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .section-header .count-badge {
+            margin-left: auto;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ─── PROGRESS BAR ─── */
+
+        .score-progress {
+            height: 10px;
+            border-radius: 20px;
+            background: #1e293b;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .score-progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        /* ─── ACTION BUTTONS ─── */
+
+        .btn-action {
+            padding: 12px 32px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #06b6d4, #2563eb);
+            border: none;
+            color: white;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+            color: white;
+        }
+
+        .btn-download {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+
+        .btn-download:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ─── NO DATA STATE ─── */
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* ─── ERROR STATE ─── */
+
+        .error-banner {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .error-banner i {
+            font-size: 3rem;
+            color: #ef4444;
+        }
+
+        /* ─── ANIMATIONS ─── */
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.25s; }
+        .delay-3 { animation-delay: 0.4s; }
+        .delay-4 { animation-delay: 0.55s; }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: scale(0.5); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .score-pop {
+            animation: countUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+            opacity: 0;
+        }
+
+        /* ─── FOOTER ─── */
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: #475569;
+            padding: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* ─── RESPONSIVE ─── */
+
+        @media (max-width: 768px) {
+            .report-hero h1 {
+                font-size: 1.6rem;
+            }
+            .score-ring-wrapper {
+                width: 160px;
+                height: 160px;
+            }
+            .score-number {
+                font-size: 2.4rem;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<!-- ─── TOP BAR ─── -->
+
+<div class="top-bar">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="brand">
+            <i class="bi bi-cpu-fill"></i> CodeSage
+        </span>
+        <a href="/">
+            <i class="bi bi-arrow-left"></i> Back to Analyzer
+        </a>
+    </div>
+</div>
+
+<!-- ─── HERO ─── -->
+
+<section class="report-hero animate-in">
+    <div class="container">
+        <h1><i class="bi bi-file-earmark-bar-graph"></i> Analysis Report</h1>
+        <p id="reportTimestamp">Generated just now</p>
+    </div>
+</section>
+
+<!-- ─── ERROR STATE (hidden by default) ─── -->
+
+<div class="container py-5" id="errorSection" style="display: none;">
+    <div class="error-banner animate-in">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+        <h3 class="mt-3" id="errorMessage">Something went wrong</h3>
+        <p class="text-secondary mt-2">Please go back and try analyzing your code again.</p>
+        <a href="/" class="btn btn-action btn-back mt-3">
+            <i class="bi bi-arrow-left"></i> Try Again
+        </a>
+    </div>
+</div>
+
+<!-- ─── MAIN RESULTS (hidden until data loads) ─── -->
+
+<div class="container py-5" id="resultsSection" style="display: none;">
+
+    <div class="row g-4">
+
+        <!-- ─── LEFT: SCORE CARD ─── -->
+
+        <div class="col-lg-4">
+
+            <div class="glass-card p-4 text-center animate-in delay-1">
+
+                <h5 class="mb-4" style="color: #94a3b8; font-weight: 500;">
+                    Quality Score
+                </h5>
+
+                <!-- SVG Ring -->
+                <div class="score-ring-wrapper">
+
+                    <svg width="200" height="200" viewBox="0 0 200 200">
+                        <circle class="score-ring-bg" cx="100" cy="100" r="85"></circle>
+                        <circle class="score-ring-fill" id="scoreRing"
+                                cx="100" cy="100" r="85"
+                                stroke-dasharray="534" stroke-dashoffset="534">
+                        </circle>
+                    </svg>
+
+                    <div class="score-number score-pop" id="scoreNumber">0</div>
+                    <div class="score-label">out of 100</div>
+
+                </div>
+
+                <!-- Category Badge -->
+                <div class="mt-4">
+                    <span class="category-badge" id="categoryBadge">
+                        <i class="bi bi-shield-check"></i>
+                        <span id="categoryText">—</span>
+                    </span>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="score-progress mt-4">
+                    <div class="score-progress-fill" id="scoreProgressFill"></div>
+                </div>
+
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="mt-4 d-flex flex-column gap-3 animate-in delay-2">
+
+                <div class="stat-pill">
+                    <div class="stat-icon issues-icon">
+                        <i class="bi bi-bug-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-count" id="issueCount">0</div>
+                        <div class="stat-label">Issues Found</div>
+                    </div>
+                </div>
+
+                <div class="stat-pill">
+                    <div class="stat-icon suggestions-icon">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <div>
+                        <div class="stat-count" id="suggestionCount">0</div>
+                        <div class="stat-label">Suggestions</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ─── RIGHT: ISSUES & SUGGESTIONS ─── -->
+
+        <div class="col-lg-8">
+
+            <!-- ISSUES CARD -->
+            <div class="glass-card p-4 mb-4 animate-in delay-3">
+
+                <div class="section-header">
+                    <div class="icon-box red">
+                        <i class="bi bi-bug-fill"></i>
+                    </div>
+                    <h4>Issues Detected</h4>
+                    <span class="count-badge bg-danger bg-opacity-25 text-danger" id="issuesBadge">0</span>
+                </div>
+
+                <div id="issuesList">
+                    <!-- Populated by JS -->
+                </div>
+
+            </div>
+
+            <!-- SUGGESTIONS CARD -->
+            <div class="glass-card p-4 animate-in delay-4">
+
+                <div class="section-header">
+                    <div class="icon-box green">
+                        <i class="bi bi-lightbulb-fill"></i>
+                    </div>
+                    <h4>Improvement Suggestions</h4>
+                    <span class="count-badge bg-success bg-opacity-25 text-success" id="suggestionsBadge">0</span>
+                </div>
+
+                <div id="suggestionsList">
+                    <!-- Populated by JS -->
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ─── ACTION BUTTONS ─── -->
+
+    <div class="text-center mt-5 animate-in delay-4">
+        <a href="/" class="btn btn-action btn-back me-3">
+            <i class="bi bi-arrow-left"></i> Analyze Again
+        </a>
+        <button class="btn btn-action btn-download" onclick="downloadReport()">
+            <i class="bi bi-download"></i> Download Report
+        </button>
+    </div>
+
+</div>
+
+<!-- ─── FOOTER ─── -->
+
+<div class="footer">
+    © 2026 CodeSage AI Reviewer | Hackathon Project
+</div>
+
+<!-- ─── JAVASCRIPT ─── -->
+
+<script>
+
+    // ─── Read result data from sessionStorage ───
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const raw = sessionStorage.getItem("analysisResult");
+
+        if (!raw) {
+            showError("No analysis data found. Please go back and submit your code.");
+            return;
+        }
+
+        let data;
+        try {
+            data = JSON.parse(raw);
+        } catch (e) {
+            showError("Invalid analysis data. Please try again.");
+            return;
+        }
+
+        if (data.error) {
+            showError(data.error);
+            return;
+        }
+
+        renderResult(data);
+    });
+
+    // ─── Show error state ───
+
+    function showError(message) {
+        document.getElementById("errorSection").style.display = "block";
+        document.getElementById("resultsSection").style.display = "none";
+        document.getElementById("errorMessage").textContent = message;
+    }
+
+    // ─── Render the full result ───
+
+    function renderResult(data) {
+
+        document.getElementById("resultsSection").style.display = "block";
+        document.getElementById("errorSection").style.display = "none";
+
+        const score = data.score || 0;
+        const category = data.scoreCategory || "Unknown";
+        const issues = data.issues || [];
+        const suggestions = data.suggestions || [];
+
+        // ── Timestamp ──
+        document.getElementById("reportTimestamp").textContent =
+            "Generated on " + new Date().toLocaleString();
+
+        // ── Score Ring Animation ──
+        const ring = document.getElementById("scoreRing");
+        const circumference = 2 * Math.PI * 85; // ~534
+        const offset = circumference - (score / 100) * circumference;
+
+        const ringColor = getScoreColor(score);
+        ring.style.stroke = ringColor;
+
+        setTimeout(() => {
+            ring.style.strokeDashoffset = offset;
+        }, 300);
+
+        // ── Score Number Counter ──
+        const scoreEl = document.getElementById("scoreNumber");
+        scoreEl.style.color = ringColor;
+        animateCounter(scoreEl, 0, score, 1600);
+
+        // ── Progress Bar ──
+        const progressFill = document.getElementById("scoreProgressFill");
+        progressFill.style.background = `linear-gradient(to right, ${ringColor}, ${ringColor}88)`;
+        setTimeout(() => {
+            progressFill.style.width = score + "%";
+        }, 300);
+
+        // ── Category Badge ──
+        const badge = document.getElementById("categoryBadge");
+        const badgeText = document.getElementById("categoryText");
+        badgeText.textContent = category;
+        badge.className = "category-badge " + getBadgeClass(category);
+
+        // ── Stats ──
+        document.getElementById("issueCount").textContent = issues.length;
+        document.getElementById("suggestionCount").textContent = suggestions.length;
+        document.getElementById("issuesBadge").textContent = issues.length;
+        document.getElementById("suggestionsBadge").textContent = suggestions.length;
+
+        // ── Issues List ──
+        const issuesList = document.getElementById("issuesList");
+        if (issues.length === 0) {
+            issuesList.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-check-circle-fill text-success"></i>
+                    <p>No issues detected — great job!</p>
+                </div>`;
+        } else {
+            issuesList.innerHTML = issues.map((issue, i) => `
+                <div class="issue-item">
+                    <div class="issue-num">${i + 1}</div>
+                    <div class="issue-text">${escapeHtml(issue)}</div>
+                </div>
+            `).join('');
+        }
+
+        // ── Suggestions List ──
+        const suggestionsList = document.getElementById("suggestionsList");
+        if (suggestions.length === 0) {
+            suggestionsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-emoji-smile-fill text-info"></i>
+                    <p>No additional suggestions — your code looks solid!</p>
+                </div>`;
+        } else {
+            suggestionsList.innerHTML = suggestions.map((s, i) => `
+                <div class="suggestion-item">
+                    <div class="suggestion-num">${i + 1}</div>
+                    <div class="suggestion-text">${escapeHtml(s)}</div>
+                </div>
+            `).join('');
+        }
+    }
+
+    // ─── Helpers ───
+
+    function getScoreColor(score) {
+        if (score >= 90) return "#22c55e";
+        if (score >= 70) return "#06b6d4";
+        if (score >= 50) return "#fbbf24";
+        return "#ef4444";
+    }
+
+    function getBadgeClass(category) {
+        const cat = (category || "").toLowerCase();
+        if (cat === "excellent") return "badge-excellent";
+        if (cat === "good")      return "badge-good";
+        if (cat === "average")   return "badge-average";
+        return "badge-poor";
+    }
+
+    function animateCounter(el, start, end, duration) {
+        const range = end - start;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease out cubic
+            const ease = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.round(start + range * ease);
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        requestAnimationFrame(update);
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ─── Download Report as Text ───
+
+    function downloadReport() {
+        const raw = sessionStorage.getItem("analysisResult");
+        if (!raw) return;
+
+        const data = JSON.parse(raw);
+        let report = "═══════════════════════════════════════\n";
+        report += "   CODESAGE ANALYSIS REPORT\n";
+        report += "═══════════════════════════════════════\n\n";
+        report += `Score:    ${data.score} / 100\n`;
+        report += `Category: ${data.scoreCategory}\n`;
+        report += `Date:     ${new Date().toLocaleString()}\n\n`;
+
+        report += "───────────────────────────────────────\n";
+        report += " ISSUES DETECTED (" + (data.issues || []).length + ")\n";
+        report += "───────────────────────────────────────\n";
+        (data.issues || []).forEach((issue, i) => {
+            report += `  ${i + 1}. ${issue}\n`;
+        });
+
+        report += "\n───────────────────────────────────────\n";
+        report += " SUGGESTIONS (" + (data.suggestions || []).length + ")\n";
+        report += "───────────────────────────────────────\n";
+        (data.suggestions || []).forEach((s, i) => {
+            report += `  ${i + 1}. ${s}\n`;
+        });
+
+        report += "\n═══════════════════════════════════════\n";
+
+        const blob = new Blob([report], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "codesage-report.txt";
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+</script>
+
+</body>
+</html>

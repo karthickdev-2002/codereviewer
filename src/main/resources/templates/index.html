@@ -296,10 +296,7 @@
 
         <!-- FORM -->
 
-        <form method="post"
-              action="/api/analyze"
-              enctype="multipart/form-data"
-              onsubmit="showLoading()">
+        <form id="analyzeForm">
 
             <!-- TEXTAREA -->
 
@@ -541,6 +538,14 @@
 
     }
 
+    // HIDE LOADING
+
+    function hideLoading(){
+
+        document.getElementById("loadingOverlay").style.display = "none";
+
+    }
+
     // SAMPLE CODE
 
     function loadSampleCode(){
@@ -600,6 +605,41 @@
                 fileList.appendChild(div);
 
             });
+
+    });
+
+    // FORM SUBMISSION — fetch() + redirect to result page
+
+    document.querySelector("form").addEventListener("submit", function (e) {
+
+        e.preventDefault();
+
+        showLoading();
+
+        const formData = new FormData(this);
+
+        fetch("/api/analyze", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            // Store result in sessionStorage for the result page
+            sessionStorage.setItem("analysisResult", JSON.stringify(data));
+
+            // Redirect to the beautiful result page
+            window.location.href = "/result";
+
+        })
+        .catch(err => {
+
+            hideLoading();
+
+            alert("Failed to analyze code. Please try again.");
+            console.error(err);
+
+        });
 
     });
 
