@@ -28,12 +28,17 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<start-class>com.codereview.CodeSageApplication</start-class>
 	</properties>
 	<dependencies>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
 	
