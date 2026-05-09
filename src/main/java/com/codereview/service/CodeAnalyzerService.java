@@ -604,4 +604,13 @@ public class CodeAnalyzerService {
     private int clamp(int value, int min, int max) {
         return Math.max(min, Math.min(max, value));
     }
+
+    /**
+     * Public helper to resolve a score band for external aggregations (e.g. project-level rollups).
+     * Keeps category mapping consistent with the core analyzer.
+     */
+    public String scoreCategoryFor(int score) {
+        int clamped = clamp(score, MIN_SCORE, INITIAL_SCORE);
+        return resolveScoreCategory(clamped);
+    }
 }

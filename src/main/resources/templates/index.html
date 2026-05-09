@@ -148,6 +148,64 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        .nav-tabs-codesage .nav-link {
+            color: #94a3b8;
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 10px 16px;
+            margin-right: 10px;
+            transition: 0.25s ease;
+        }
+
+        .nav-tabs-codesage .nav-link:hover {
+            transform: translateY(-1px);
+            color: #e2e8f0;
+            border-color: rgba(6, 182, 212, 0.6);
+        }
+
+        .nav-tabs-codesage .nav-link.active {
+            color: #06121f;
+            background: linear-gradient(135deg, #06b6d4, #2563eb);
+            border-color: transparent;
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.2);
+        }
+
+        .drop-zone {
+            border: 2px dashed #06b6d4;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 26px;
+            text-align: center;
+            transition: 0.25s ease;
+        }
+
+        .drop-zone.dragover {
+            background: rgba(6, 182, 212, 0.12);
+            transform: scale(1.01);
+        }
+
+        .progress {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #06b6d4, #22c55e);
+            transition: width 0.25s ease;
+        }
+
+        .fade-collapse {
+            transition: all 0.25s ease;
+        }
+
+        .risky {
+            border-left: 4px solid #f97316 !important;
+            background: rgba(249, 115, 22, 0.08) !important;
+        }
     </style>
 </head>
 
@@ -166,7 +224,7 @@
 
 <div class="loading-overlay" id="loadingOverlay">
     <div class="spinner-border text-info" style="width: 5rem; height: 5rem;"></div>
-    <h3 class="mt-4 text-white">Analyzing code with custom rules...</h3>
+    <h3 class="mt-4 text-white" id="loadingMessage">Analyzing...</h3>
 </div>
 
 <section class="hero-section text-center">
@@ -177,8 +235,29 @@
 </section>
 
 <div class="container py-5">
-    <div class="row g-4">
-        <div class="col-xl-7">
+    <ul class="nav nav-pills nav-tabs-codesage mb-4" id="codesageTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-paste" data-bs-toggle="pill" data-bs-target="#pane-paste"
+                    type="button" role="tab" aria-controls="pane-paste" aria-selected="true">
+                <i class="bi bi-code-slash"></i> Paste Code Analyzer
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-rules" data-bs-toggle="pill" data-bs-target="#pane-rules"
+                    type="button" role="tab" aria-controls="pane-rules" aria-selected="false">
+                <i class="bi bi-list-check"></i> Custom Rules
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-zip" data-bs-toggle="pill" data-bs-target="#pane-zip"
+                    type="button" role="tab" aria-controls="pane-zip" aria-selected="false">
+                <i class="bi bi-file-zip"></i> ZIP Project Analyzer
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="pane-paste" role="tabpanel" aria-labelledby="tab-paste">
             <div class="glass-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -219,8 +298,8 @@
             </div>
         </div>
 
-        <div class="col-xl-5">
-            <div class="glass-card p-4 h-100">
+        <div class="tab-pane fade" id="pane-rules" role="tabpanel" aria-labelledby="tab-rules">
+            <div class="glass-card p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h3><i class="bi bi-list-check"></i> Custom Rule Engine</h3>
@@ -246,6 +325,92 @@
                 </div>
                 <div id="emptyRulesMessage" class="alert alert-info mt-3" style="display:none;">
                     No custom rules configured yet. Create a rule to extend the static analyzer.
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pane-zip" role="tabpanel" aria-labelledby="tab-zip">
+            <div class="glass-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3><i class="bi bi-file-zip"></i> ZIP Project Analyzer</h3>
+                        <p class="text-secondary mb-0">Upload a complete Java project (.zip) and get project, file and method level insights.</p>
+                    </div>
+                    <div class="text-secondary small">Max 50MB • .zip only</div>
+                </div>
+
+                <div class="drop-zone" id="zipDropZone">
+                    <input type="file" id="zipFileInput" accept=".zip" style="display:none;">
+                    <i class="bi bi-cloud-arrow-up display-4 text-info"></i>
+                    <h5 class="mt-3">Drag & drop your project ZIP here</h5>
+                    <p class="mb-2 text-white-50">Supported: Spring Boot, Maven, Gradle, Plain Java</p>
+                    <button class="btn btn-outline-info mt-2" type="button" onclick="triggerZipPicker()">
+                        <i class="bi bi-folder2-open"></i> Choose ZIP
+                    </button>
+                    <div id="zipSelectedFile" class="mt-3 text-white-50"></div>
+                </div>
+
+                <div class="mt-3" id="zipProgressWrap" style="display:none;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-white-50 small">Uploading / Analyzing</div>
+                        <div class="text-white-50 small" id="zipProgressText">0%</div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="zipProgressBar" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="analyze-btn" type="button" onclick="uploadAndAnalyzeZip()">
+                        <i class="bi bi-search"></i> Analyze Project ZIP
+                    </button>
+                </div>
+
+                <div id="zipResults" class="mt-5" style="display:none;">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="glass-card p-3">
+                                <div class="text-secondary small">Files</div>
+                                <div class="fs-3 fw-bold" id="zipCardFiles">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-3">
+                                <div class="text-secondary small">Functions</div>
+                                <div class="fs-3 fw-bold" id="zipCardFunctions">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-3">
+                                <div class="text-secondary small">Issues</div>
+                                <div class="fs-3 fw-bold" id="zipCardIssues">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="glass-card p-3">
+                                <div class="text-secondary small">Average Score</div>
+                                <div class="fs-3 fw-bold" id="zipCardScore">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h4 class="mb-3"><i class="bi bi-table"></i> File Analysis</h4>
+                        <div class="table-responsive">
+                            <table class="table table-borderless table-striped align-middle text-white mb-0">
+                                <thead>
+                                <tr class="text-secondary small text-uppercase">
+                                    <th>File Name</th>
+                                    <th>Score</th>
+                                    <th>Category</th>
+                                    <th>Issues</th>
+                                    <th>View</th>
+                                </tr>
+                                </thead>
+                                <tbody id="zipFileTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -324,16 +489,75 @@
     </div>
 </div>
 
+<div class="modal fade" id="zipFileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border border-info">
+            <div class="modal-header border-0 bg-dark text-white">
+                <div>
+                    <h5 class="modal-title" id="zipFileModalTitle">File Details</h5>
+                    <div class="text-white-50 small" id="zipFileModalPath"></div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-dark text-white">
+                <div class="row g-3">
+                    <div class="col-lg-5">
+                        <div class="glass-card p-3">
+                            <h6 class="text-info mb-2"><i class="bi bi-exclamation-triangle"></i> File Issues</h6>
+                            <ul id="zipFileIssues" class="mb-0"></ul>
+                        </div>
+                        <div class="glass-card p-3 mt-3">
+                            <h6 class="text-info mb-2"><i class="bi bi-lightbulb"></i> Suggestions</h6>
+                            <ul id="zipFileSuggestions" class="mb-0"></ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="glass-card p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="text-info mb-0"><i class="bi bi-braces"></i> Function / Method Analysis</h6>
+                                <span class="badge bg-info text-dark" id="zipMethodCountBadge">0 methods</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-borderless table-striped align-middle text-white mb-0">
+                                    <thead>
+                                    <tr class="text-secondary small text-uppercase">
+                                        <th>Method Name</th>
+                                        <th>Score</th>
+                                        <th>Nested Depth</th>
+                                        <th>Complexity</th>
+                                        <th>Issues</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="zipMethodTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="text-white-50 small mt-2">Risky methods are highlighted.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-dark">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const ruleModal = new bootstrap.Modal(document.getElementById('ruleModal'));
+    const zipFileModal = new bootstrap.Modal(document.getElementById('zipFileModal'));
     let currentEditRuleId = null;
     let currentRules = [];
+    let selectedZipFile = null;
+    let zipAnalysisData = null;
 
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('fileInput').addEventListener('change', renderFileSelection);
         document.getElementById('analyzeForm').addEventListener('submit', handleAnalyzeSubmit);
         loadRules();
+        wireZipDropZone();
     });
 
     function renderFileSelection() {
@@ -695,11 +919,17 @@
     }
 
     function showLoading() {
+        document.getElementById('loadingMessage').textContent = 'Analyzing...';
         document.getElementById('loadingOverlay').style.display = 'flex';
     }
 
     function hideLoading() {
         document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function showLoadingMessage(message) {
+        document.getElementById('loadingMessage').textContent = message || 'Analyzing...';
+        document.getElementById('loadingOverlay').style.display = 'flex';
     }
 
     function showToast(message, type = 'info') {
@@ -724,6 +954,220 @@
         const div = document.createElement('div');
         div.textContent = value || '';
         return div.innerHTML;
+    }
+
+    function triggerZipPicker() {
+        document.getElementById('zipFileInput').click();
+    }
+
+    function wireZipDropZone() {
+        const dropZone = document.getElementById('zipDropZone');
+        const zipInput = document.getElementById('zipFileInput');
+
+        zipInput.addEventListener('change', () => {
+            const file = zipInput.files && zipInput.files[0] ? zipInput.files[0] : null;
+            setSelectedZipFile(file);
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0] ? e.dataTransfer.files[0] : null;
+            setSelectedZipFile(file);
+        });
+    }
+
+    function setSelectedZipFile(file) {
+        selectedZipFile = null;
+        const label = document.getElementById('zipSelectedFile');
+        label.innerHTML = '';
+
+        if (!file) {
+            return;
+        }
+
+        const isZip = (file.name || '').toLowerCase().endsWith('.zip');
+        const tooLarge = file.size > 50 * 1024 * 1024;
+        if (!isZip) {
+            showToast('Invalid ZIP', 'warning');
+            return;
+        }
+        if (tooLarge) {
+            showToast('Huge upload abuse', 'warning');
+            return;
+        }
+
+        selectedZipFile = file;
+        label.innerHTML = `<div class="file-item"><i class="bi bi-file-zip-fill text-info"></i> ${escapeHtml(file.name)} <span class="text-white-50">(${Math.round(file.size / 1024 / 1024)}MB)</span></div>`;
+        showToast('Project Uploaded Successfully', 'success');
+    }
+
+    function uploadAndAnalyzeZip() {
+        if (!selectedZipFile) {
+            showToast('Please choose a .zip file first.', 'warning');
+            return;
+        }
+
+        const progressWrap = document.getElementById('zipProgressWrap');
+        const bar = document.getElementById('zipProgressBar');
+        const text = document.getElementById('zipProgressText');
+        progressWrap.style.display = 'block';
+        bar.style.width = '0%';
+        text.textContent = '0%';
+
+        const formData = new FormData();
+        formData.append('file', selectedZipFile);
+
+        showLoadingMessage('Uploading project ZIP...');
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/analyze-zip', true);
+
+        xhr.upload.onprogress = (evt) => {
+            if (!evt.lengthComputable) return;
+            const pct = Math.max(0, Math.min(100, Math.round((evt.loaded / evt.total) * 100)));
+            bar.style.width = pct + '%';
+            text.textContent = pct + '%';
+        };
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState !== 4) return;
+            hideLoading();
+            try {
+                const payload = xhr.responseText ? JSON.parse(xhr.responseText) : null;
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    zipAnalysisData = payload;
+                    showToast('Analysis Completed', 'success');
+                    renderZipResults(payload);
+                    bar.style.width = '100%';
+                    text.textContent = '100%';
+                    return;
+                }
+
+                const message = payload && payload.error ? payload.error : 'Invalid ZIP';
+                showToast(message, 'danger');
+            } catch (e) {
+                showToast('Unable to analyze ZIP right now.', 'danger');
+            }
+        };
+
+        xhr.send(formData);
+    }
+
+    function renderZipResults(data) {
+        if (!data || !data.project || !Array.isArray(data.files)) {
+            showToast('Invalid ZIP', 'danger');
+            return;
+        }
+
+        document.getElementById('zipResults').style.display = 'block';
+
+        document.getElementById('zipCardFiles').textContent = data.project.totalJavaFiles ?? data.files.length ?? 0;
+        document.getElementById('zipCardFunctions').textContent = data.project.totalFunctions ?? 0;
+        document.getElementById('zipCardIssues').textContent = data.project.totalIssues ?? 0;
+        document.getElementById('zipCardScore').textContent = data.project.averageProjectScore ?? 0;
+
+        const tbody = document.getElementById('zipFileTableBody');
+        tbody.innerHTML = '';
+
+        data.files.forEach((f, idx) => {
+            const issues = Array.isArray(f.issues) ? f.issues : [];
+            const issueCount = issues.length;
+            const row = document.createElement('tr');
+            row.className = 'text-white fade-collapse';
+            row.innerHTML = `
+                <td>
+                    <div class="fw-semibold">${escapeHtml(f.fileName || 'Unknown.java')}</div>
+                    <div class="text-white-50 small">${escapeHtml(f.relativePath || '')}</div>
+                </td>
+                <td><span class="badge bg-secondary">${f.score ?? 0}</span></td>
+                <td><span class="badge bg-info text-dark">${escapeHtml(f.category || '')}</span></td>
+                <td><span class="badge bg-dark border border-info">${issueCount}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-info" type="button" onclick="openZipFileDetails(${idx})">
+                        View Details
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function openZipFileDetails(index) {
+        if (!zipAnalysisData || !Array.isArray(zipAnalysisData.files)) {
+            return;
+        }
+        const f = zipAnalysisData.files[index];
+        if (!f) return;
+
+        document.getElementById('zipFileModalTitle').textContent = `${f.fileName || 'File'} • Score ${f.score ?? 0} (${f.category || ''})`;
+        document.getElementById('zipFileModalPath').textContent = f.relativePath || '';
+
+        const issuesEl = document.getElementById('zipFileIssues');
+        const suggEl = document.getElementById('zipFileSuggestions');
+        issuesEl.innerHTML = '';
+        suggEl.innerHTML = '';
+
+        const issues = Array.isArray(f.issues) ? f.issues : [];
+        const suggestions = Array.isArray(f.suggestions) ? f.suggestions : [];
+
+        if (!issues.length) {
+            issuesEl.innerHTML = '<li class="text-white-50">No issues detected.</li>';
+        } else {
+            issues.forEach(i => {
+                const li = document.createElement('li');
+                li.textContent = i;
+                issuesEl.appendChild(li);
+            });
+        }
+
+        if (!suggestions.length) {
+            suggEl.innerHTML = '<li class="text-white-50">No suggestions available.</li>';
+        } else {
+            suggestions.forEach(s => {
+                const li = document.createElement('li');
+                li.textContent = s;
+                suggEl.appendChild(li);
+            });
+        }
+
+        const methods = Array.isArray(f.methodAnalysisResults) ? f.methodAnalysisResults : [];
+        document.getElementById('zipMethodCountBadge').textContent = `${methods.length} methods`;
+
+        const mtbody = document.getElementById('zipMethodTableBody');
+        mtbody.innerHTML = '';
+
+        methods.forEach(m => {
+            const issues = Array.isArray(m.issues) ? m.issues : [];
+            const complexity = extractComplexity(issues);
+            const issueCount = Math.max(0, issues.length - (complexity != null ? 1 : 0));
+            const risky = (m.score ?? 0) < 50 || (m.nestedDepth ?? 0) > 4 || (complexity ?? 0) > 12;
+            const tr = document.createElement('tr');
+            tr.className = risky ? 'risky' : '';
+            tr.innerHTML = `
+                <td class="fw-semibold">${escapeHtml(m.methodName || '')}</td>
+                <td><span class="badge ${risky ? 'bg-warning text-dark' : 'bg-secondary'}">${m.score ?? 0}</span></td>
+                <td><span class="badge bg-dark border border-info">${m.nestedDepth ?? 0}</span></td>
+                <td><span class="badge bg-dark border border-info">${complexity ?? '-'}</span></td>
+                <td><span class="badge bg-dark border border-info">${issueCount}</span></td>
+            `;
+            mtbody.appendChild(tr);
+        });
+
+        zipFileModal.show();
+    }
+
+    function extractComplexity(issues) {
+        if (!Array.isArray(issues)) return null;
+        const line = issues.find(i => typeof i === 'string' && i.toLowerCase().includes('complexity score'));
+        if (!line) return null;
+        const m = line.match(/(\d+)/);
+        return m ? parseInt(m[1], 10) : null;
     }
 </script>
 </body>

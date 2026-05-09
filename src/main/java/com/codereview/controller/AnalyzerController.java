@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.codereview.service.CodeAnalyzerService;
+import com.codereview.service.ZipAnalyzerService;
 import com.codesage.model.AnalysisResult;
 import com.codesage.model.CustomRule;
 
@@ -26,9 +27,11 @@ import com.codesage.model.CustomRule;
 public class AnalyzerController {
 
     private final CodeAnalyzerService codeAnalyzerService;
+    private final ZipAnalyzerService zipAnalyzerService;
 
-    public AnalyzerController(CodeAnalyzerService codeAnalyzerService) {
+    public AnalyzerController(CodeAnalyzerService codeAnalyzerService, ZipAnalyzerService zipAnalyzerService) {
         this.codeAnalyzerService = codeAnalyzerService;
+        this.zipAnalyzerService = zipAnalyzerService;
     }
 
     @GetMapping("/api/status")
@@ -99,6 +102,25 @@ public class AnalyzerController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
                     "error", "Something went wrong while analyzing your code. Please try again."
+            ));
+        }
+    }
+
+    @PostMapping("/analyze-zip")
+    public ResponseEntity<?> analyzeZip(@RequestParam("file") MultipartFile file) {
+        try {
+            var result = zipAnalyzerService.analyzeZip(file);
+            if (result != null && result.containsKey("error")) {
+                return ResponseEntity.badRequest().body(result);
+            }
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", ex.getMessage() == null || ex.getMessage().isBlank() ? "Invalid ZIP" : ex.getMessage()
+            ));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "error", "Something went wrong while analyzing your ZIP. Please try again."
             ));
         }
     }
